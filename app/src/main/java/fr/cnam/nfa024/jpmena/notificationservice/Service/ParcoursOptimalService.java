@@ -1,7 +1,9 @@
 package fr.cnam.nfa024.jpmena.notificationservice.Service;
 
+import android.annotation.TargetApi;
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -14,7 +16,7 @@ import fr.cnam.nfa024.jpmena.notificationservice.ReceiverActivity;
 public class ParcoursOptimalService extends IntentService {
 
 
-    public final static String TAG_INTENT = "NotificationClicked";
+    private String FOLLOWERS_CHANNEL_ID  = "Followers";
 
     private NotificationManager mNotificationsManager;
 
@@ -24,6 +26,7 @@ public class ParcoursOptimalService extends IntentService {
 
 
     @Override
+    @TargetApi(26)
     protected void onHandleIntent(Intent intent) {//methode appelée en arrière plan
         if (intent != null) {
 
@@ -34,6 +37,10 @@ public class ParcoursOptimalService extends IntentService {
             }
 
             mNotificationsManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            if (Integer.valueOf(android.os.Build.VERSION.SDK) >= 26){
+                NotificationChannel followersChannel = new NotificationChannel(FOLLOWERS_CHANNEL_ID, "Followers", NotificationManager.IMPORTANCE_DEFAULT);
+                mNotificationsManager.createNotificationChannel(followersChannel);
+            }
             CharSequence tickerText = "view hike";
             //does only work with an explicit Intent
             Intent intentReceiverAcctivity = new Intent(this, ReceiverActivity.class);
@@ -46,10 +53,14 @@ public class ParcoursOptimalService extends IntentService {
             builder.setTicker(tickerText);
             builder.setContentTitle("The Hike");
             builder.setContentText("HikeMap is available");
+            if (Integer.valueOf(android.os.Build.VERSION.SDK) >= 26){
+                builder.setChannelId(FOLLOWERS_CHANNEL_ID);
+            }
             builder.setSmallIcon(R.drawable.explore);
             Bitmap large_icon_bmp = BitmapFactory.decodeResource(this.getResources(),
                     R.drawable.ic_action_map);
             builder.setLargeIcon(large_icon_bmp);
+
             builder.setContentIntent(pendingIntent);
             builder.setOngoing(true);
             builder.setSubText("Click on this icon to access the Hike's map");   //API level 16
