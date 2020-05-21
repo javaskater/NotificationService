@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import fr.cnam.nfa024.jpmena.notificationservice.R;
+import fr.cnam.nfa024.jpmena.notificationservice.ReceiverActivity;
 
 public class ParcoursOptimalService extends IntentService {
 
@@ -34,7 +35,8 @@ public class ParcoursOptimalService extends IntentService {
 
             mNotificationsManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             CharSequence tickerText = "view hike";
-            Intent intentReceiverAcctivity = new Intent(TAG_INTENT);
+            //does only work with an explicit Intent
+            Intent intentReceiverAcctivity = new Intent(this, ReceiverActivity.class);
             intentReceiverAcctivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(this,0, intentReceiverAcctivity, 0);
 
