@@ -9,6 +9,8 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.support.v4.app.NotificationCompat;
 
 import fr.cnam.nfa024.jpmena.notificationservice.R;
 import fr.cnam.nfa024.jpmena.notificationservice.ReceiverActivity;
@@ -37,9 +39,16 @@ public class ParcoursOptimalService extends IntentService {
             }
 
             mNotificationsManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            if (Integer.valueOf(android.os.Build.VERSION.SDK) >= 26){
+            NotificationCompat.Builder builder = null;
+            if (Integer.valueOf(android.os.Build.VERSION.SDK) >= Build.VERSION_CODES.O){ //A partir de l'API 26 on doit définir un channel pour notre notification
                 NotificationChannel followersChannel = new NotificationChannel(FOLLOWERS_CHANNEL_ID, "Followers", NotificationManager.IMPORTANCE_DEFAULT);
-                mNotificationsManager.createNotificationChannel(followersChannel);
+                followersChannel.setDescription("le canal de mes applications");
+                followersChannel.setImportance(NotificationManager.IMPORTANCE_HIGH);
+                mNotificationsManager.createNotificationChannel(followersChannel); // Le notofocationService crée le canal
+                builder = new NotificationCompat.Builder(this, FOLLOWERS_CHANNEL_ID); //Le notification Builder passera toujours par ce canal
+            } else {
+                builder = new NotificationCompat.Builder(this);
+                builder.setPriority(NotificationCompat.PRIORITY_HIGH);
             }
             CharSequence tickerText = "view hike";
             //does only work with an explicit Intent
@@ -47,15 +56,12 @@ public class ParcoursOptimalService extends IntentService {
             intentReceiverAcctivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             PendingIntent pendingIntent = PendingIntent.getActivity(this,0, intentReceiverAcctivity, 0);
 
-            Notification.Builder builder = new Notification.Builder(this);
+
 
             builder.setAutoCancel(false);
             builder.setTicker(tickerText);
             builder.setContentTitle("The Hike");
             builder.setContentText("HikeMap is available");
-            if (Integer.valueOf(android.os.Build.VERSION.SDK) >= 26){
-                builder.setChannelId(FOLLOWERS_CHANNEL_ID);
-            }
             builder.setSmallIcon(R.drawable.explore);
             Bitmap large_icon_bmp = BitmapFactory.decodeResource(this.getResources(),
                     R.drawable.ic_action_map);
