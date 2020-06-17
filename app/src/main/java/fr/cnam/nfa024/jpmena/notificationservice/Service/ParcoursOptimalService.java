@@ -14,10 +14,12 @@ import android.support.v4.app.NotificationCompat;
 
 import fr.cnam.nfa024.jpmena.notificationservice.R;
 import fr.cnam.nfa024.jpmena.notificationservice.ReceiverActivity;
+import fr.cnam.nfa024.jpmena.notificationservice.bean.Movement;
 
 public class ParcoursOptimalService extends IntentService {
 
 
+    public static final String MOVEMENT = "Movement";
     private String FOLLOWERS_CHANNEL_ID  = "Followers";
 
     private NotificationManager mNotificationsManager;
@@ -51,10 +53,15 @@ public class ParcoursOptimalService extends IntentService {
                 builder.setPriority(NotificationCompat.PRIORITY_HIGH);
             }
             CharSequence tickerText = "view hike";
+            Movement m = new Movement();
+            m.setIdFrom(1);
+            m.setIdTo(2);
+            m.setMovement("NORTH");
             //does only work with an explicit Intent
-            Intent intentReceiverAcctivity = new Intent(this, ReceiverActivity.class);
-            intentReceiverAcctivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this,0, intentReceiverAcctivity, 0);
+            Intent intentReceiverActivity = new Intent(this, ReceiverActivity.class);
+            intentReceiverActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intentReceiverActivity.putExtra(MOVEMENT, m);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this,0, intentReceiverActivity, 0);
 
 
 
